@@ -11,6 +11,7 @@ enum BookingStatus {
   PENDING
   PAID
   EXPIRED
+  CONFIRMED
 }
 
 enum PaymentStatus {
@@ -86,10 +87,12 @@ model Seat {
 
 model Booking {
   id         String        @id @default(uuid())
+  userId     String
   scheduleId String
   status     BookingStatus
   expiresAt  DateTime
 
+  user     User     @relation(fields: [userId], references: [id])
   schedule Schedule @relation(fields: [scheduleId], references: [id])
   seats     BookingSeat[]
   payment   Payment?
@@ -117,3 +120,15 @@ model Payment {
 
   booking Booking @relation(fields: [bookingId], references: [id])
 }
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  first_name  String
+  last_name   String
+  createdAt   DateTime @default(now())
+
+  bookings  Booking[]
+}
+
