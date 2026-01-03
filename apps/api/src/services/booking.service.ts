@@ -15,7 +15,7 @@ export async function createBookingWithLock({
   return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const lockedSeats = await tx.bookingSeat.findMany({
       where: {
-        seatId: { in: seatIds },
+        seat: { id: { in: seatIds } },
         booking: {
           scheduleId,
           status: { in: ["PENDING", "CONFIRMED"] },
@@ -23,7 +23,7 @@ export async function createBookingWithLock({
         },
       },
     });
-
+    console.log("Locked seats:", lockedSeats);
     if (lockedSeats.length > 0) {
       throw new Error("Seat already booked");
     }
