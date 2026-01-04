@@ -47,3 +47,14 @@ export async function createBookingWithLock({
     return booking;
   });
 }
+
+export async function createBookingService(input: {
+  userId: string;
+  scheduleId: string;
+  seatIds: string[];
+}) {
+  return {
+    message: "Booking service connected",
+    input,
+  };
+}
