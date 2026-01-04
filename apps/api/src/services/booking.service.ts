@@ -49,16 +49,16 @@ export async function createBookingWithLock({
   });
 }
 
-export async function createBookingService(input: {
+export async function createBookingService(booking: {
   userId: string;
   scheduleId: string;
   seatIds: string[];
 }) {
-  if (!input.userId) {
+  if (!booking.userId) {
     throw new BadRequestError("userId is required");
   }
   return {
     message: "Booking service connected",
-    input,
+    booking,
   };
 }
