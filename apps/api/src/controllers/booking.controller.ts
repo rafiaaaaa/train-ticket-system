@@ -8,5 +8,8 @@ export async function createBookingController(req: Request, res: Response) {
     seatIds: req.body.seatIds,
   });
 
-  res.status(201).json(booking);
+  res.status(201).json({
+    success: true,
+    data: booking,
+  });
 }

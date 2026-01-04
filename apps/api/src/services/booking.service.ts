@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+import { BadRequestError } from "../shared/errors/BadRequestError";
 
 export async function createBookingWithLock({
   userId,
@@ -53,6 +54,9 @@ export async function createBookingService(input: {
   scheduleId: string;
   seatIds: string[];
 }) {
+  if (!input.userId) {
+    throw new BadRequestError("userId is required");
+  }
   return {
     message: "Booking service connected",
     input,
