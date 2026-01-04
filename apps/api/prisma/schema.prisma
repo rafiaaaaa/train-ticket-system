@@ -126,7 +126,7 @@ model User {
   email       String   @unique
   password    String
   first_name  String
-  last_name   String
+  last_name   String?
   createdAt   DateTime @default(now())
 
   bookings  Booking[]
