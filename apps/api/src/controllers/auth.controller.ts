@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { loginService, registerService } from "../services/auth.service";
+import { prisma } from "../lib/prisma";
+import { success } from "zod";
 
 export const registerUser = async (req: Request, res: Response) => {
   const user = await registerService(req.body);
@@ -26,7 +28,7 @@ export const loginUser = async (req: Request, res: Response) => {
   });
 };
 
-export const logout = async (_req: Request, res: Response) => {
+export const logout = async (req: Request, res: Response) => {
   res.clearCookie("access_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -36,5 +38,22 @@ export const logout = async (_req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: "Logout successful",
+  });
+};
+
+export const me = async (req: Request, res: Response) => {
+  const { userId: id } = req.user!;
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    omit: {
+      password: true,
+    },
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: user,
   });
 };
