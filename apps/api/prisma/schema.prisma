@@ -67,6 +67,8 @@ model Schedule {
 
   train    Train @relation(fields: [trainId], references: [id])
   route    Route @relation(fields: [routeId], references: [id])
+  
+  bookingSeats BookingSeat[]
   bookings Booking[]
 
   createdAt DateTime @default(now())
@@ -101,14 +103,16 @@ model Booking {
 }
 
 model BookingSeat {
-  id        String @id @default(uuid())
-  bookingId String
-  seatId    String
+  id         String @id @default(uuid())
+  bookingId  String
+  seatId     String
+  scheduleId String
 
-  booking Booking @relation(fields: [bookingId], references: [id])
-  seat    Seat    @relation(fields: [seatId], references: [id])
+  booking  Booking  @relation(fields: [bookingId], references: [id])
+  seat     Seat     @relation(fields: [seatId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
 
-  @@unique([seatId, bookingId])
+  @@unique([scheduleId, seatId])
 }
 
 model Payment {
