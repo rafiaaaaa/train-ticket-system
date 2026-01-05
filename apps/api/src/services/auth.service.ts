@@ -1,7 +1,9 @@
 import { prisma } from "../lib/prisma";
-import { RegisterRequest } from "../validators/auth.schema";
+import { LoginRequest, RegisterRequest } from "../validators/auth.schema";
 import { BadRequestError } from "../shared/errors/BadRequestError";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { jwtConfig } from "../config/jwt";
 
 export const registerService = async (data: RegisterRequest) => {
   const { email, first_name, last_name } = data;
@@ -29,4 +31,38 @@ export const registerService = async (data: RegisterRequest) => {
 
   const { password, ...safeUser } = user;
   return safeUser;
+};
+
+export const loginService = async (data: LoginRequest) => {
+  const { email, password } = data;
+
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (!existingUser) {
+    throw new BadRequestError("User not found");
+  }
+
+  const passwordValid = await bcrypt.compare(password, existingUser.password);
+  if (!passwordValid) {
+    throw new BadRequestError("Invalid Password");
+  }
+
+  const token = jwt.sign(
+    {
+      userId: existingUser.id,
+    },
+    jwtConfig.secret,
+    { expiresIn: jwtConfig.expiresIn as jwt.SignOptions["expiresIn"] }
+  );
+
+  const { password: existingUserPassword, ...safeUser } = existingUser;
+
+  return {
+    user: safeUser,
+    token,
+  };
 };

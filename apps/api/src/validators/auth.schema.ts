@@ -1,5 +1,6 @@
-import { z } from "zod";
+import { email, z } from "zod";
 
+// Register Validator
 export const registerSchema = z.object({
   email: z.email(),
   password: z
@@ -15,3 +16,13 @@ export const registerSchema = z.object({
 });
 
 export type RegisterRequest = z.infer<typeof registerSchema>;
+
+// Login Validators
+export const loginSchema = z.object({
+  email: z.email(),
+  password: z
+    .string({ error: "Password is required" })
+    .min(6, { error: "Password at least 6 character" }),
+});
+
+export type LoginRequest = z.infer<typeof loginSchema>;
