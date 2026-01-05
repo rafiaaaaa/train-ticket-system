@@ -2,8 +2,7 @@ import { prisma } from "../lib/prisma";
 import { LoginRequest, RegisterRequest } from "../validators/auth.schema";
 import { BadRequestError } from "../shared/errors/BadRequestError";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { jwtConfig } from "../config/jwt";
+import { signJwt } from "../utils/jwt";
 
 export const registerService = async (data: RegisterRequest) => {
   const { email, first_name, last_name } = data;
@@ -51,13 +50,11 @@ export const loginService = async (data: LoginRequest) => {
     throw new BadRequestError("Invalid Password");
   }
 
-  const token = jwt.sign(
-    {
-      userId: existingUser.id,
-    },
-    jwtConfig.secret,
-    { expiresIn: jwtConfig.expiresIn as jwt.SignOptions["expiresIn"] }
-  );
+  const token = signJwt({
+    userId: existingUser.id,
+    email: existingUser.email,
+    role: "USER",
+  });
 
   const { password: existingUserPassword, ...safeUser } = existingUser;
 
