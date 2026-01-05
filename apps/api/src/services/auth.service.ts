@@ -1,9 +1,11 @@
 import { prisma } from "../lib/prisma";
 import { LoginRequest, RegisterRequest } from "../validators/auth.schema";
 import { BadRequestError } from "../shared/errors/BadRequestError";
-import bcrypt from "bcrypt";
 import { signJwt, signRefreshJwt, verifyRefreshJwt } from "../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
+import { bcryptCompare, bcryptHash } from "../utils/bcrypt";
+import crypto from "crypto";
+import { hashToken } from "../utils/token-hash";
 
 export const registerService = async (data: RegisterRequest) => {
   const { email, first_name, last_name } = data;
@@ -18,7 +20,7 @@ export const registerService = async (data: RegisterRequest) => {
     throw new BadRequestError("User already exists");
   }
 
-  const hashed = await bcrypt.hash(data.password, 10);
+  const hashed = await bcryptHash(data.password);
 
   const user = await prisma.user.create({
     data: {
@@ -46,7 +48,7 @@ export const loginService = async (data: LoginRequest) => {
     throw new BadRequestError("User not found");
   }
 
-  const passwordValid = await bcrypt.compare(password, existingUser.password);
+  const passwordValid = await bcryptCompare(password, existingUser.password);
   if (!passwordValid) {
     throw new BadRequestError("Invalid Password");
   }
@@ -59,6 +61,16 @@ export const loginService = async (data: LoginRequest) => {
 
   const accessToken = signJwt(payload);
   const refreshToken = signRefreshJwt(payload);
+
+  const token = hashToken(refreshToken);
+
+  await prisma.refreshToken.create({
+    data: {
+      token,
+      userId: existingUser.id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  });
 
   const { password: existingUserPassword, ...safeUser } = existingUser;
 
@@ -97,8 +109,33 @@ export const refreshTokenService = async (refreshToken: string) => {
     role: refreshIsValid.role,
   };
 
-  const newAccessToken = signJwt(payload);
-  const newRefreshToken = signRefreshJwt(payload);
+  const token = hashToken(refreshToken);
+  const existingToken = await prisma.refreshToken.findFirst({
+    where: {
+      token,
+      revokedAt: null,
+    },
+  });
 
-  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+  if (!existingToken) {
+    throw new BadRequestError("Invalid refresh token");
+  }
+
+  const newAccessToken = signJwt(payload);
+
+  return newAccessToken;
+};
+
+export const logoutService = async (refreshToken: string) => {
+  const token = hashToken(refreshToken);
+  await prisma.refreshToken.update({
+    where: {
+      token,
+    },
+    data: {
+      revokedAt: new Date(),
+    },
+  });
+
+  return;
 };

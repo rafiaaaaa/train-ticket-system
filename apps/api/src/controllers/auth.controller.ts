@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   loginService,
+  logoutService,
   meService,
   refreshTokenService,
   registerService,
@@ -50,6 +51,10 @@ export const logout = async (req: Request, res: Response) => {
     sameSite: "lax",
   });
 
+  if (req.cookies?.refresh_token) {
+    await logoutService(req.cookies.refresh_token);
+  }
+
   return res.status(200).json({
     success: true,
     message: "Logout successful",
@@ -75,13 +80,7 @@ export const refresh = async (req: Request, res: Response) => {
 
   const token = await refreshTokenService(refreshToken);
 
-  res.cookie("access_token", token.accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  });
-
-  res.cookie("refresh_token", token.refreshToken, {
+  res.cookie("access_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
