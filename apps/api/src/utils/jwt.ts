@@ -1,7 +1,7 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import { jwtConfig } from "../config/jwt";
 
-const { secret, expiresIn } = jwtConfig;
+const { secret, refreshSecret, expiresIn, refreshExpiresIn } = jwtConfig;
 export interface JwtPayload {
   userId: string;
   email: string;
@@ -14,6 +14,16 @@ export function signJwt(payload: JwtPayload) {
   });
 }
 
+export function signRefreshJwt(payload: JwtPayload) {
+  return jwt.sign(payload, secret, {
+    expiresIn: refreshExpiresIn as SignOptions["expiresIn"],
+  });
+}
+
 export function verifyJwt(token: string): JwtPayload {
   return jwt.verify(token, secret) as JwtPayload;
+}
+
+export function verifyRefreshJwt(token: string): JwtPayload {
+  return jwt.verify(token, refreshSecret) as JwtPayload;
 }

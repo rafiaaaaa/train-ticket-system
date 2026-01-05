@@ -2,7 +2,8 @@ import { prisma } from "../lib/prisma";
 import { LoginRequest, RegisterRequest } from "../validators/auth.schema";
 import { BadRequestError } from "../shared/errors/BadRequestError";
 import bcrypt from "bcrypt";
-import { signJwt } from "../utils/jwt";
+import { signJwt, signRefreshJwt, verifyRefreshJwt } from "../utils/jwt";
+import { JwtPayload } from "jsonwebtoken";
 
 export const registerService = async (data: RegisterRequest) => {
   const { email, first_name, last_name } = data;
@@ -50,16 +51,54 @@ export const loginService = async (data: LoginRequest) => {
     throw new BadRequestError("Invalid Password");
   }
 
-  const token = signJwt({
+  const payload = {
     userId: existingUser.id,
     email: existingUser.email,
-    role: "USER",
-  });
+    role: "USER" as JwtPayload["role"],
+  };
+
+  const accessToken = signJwt(payload);
+  const refreshToken = signRefreshJwt(payload);
 
   const { password: existingUserPassword, ...safeUser } = existingUser;
 
   return {
     user: safeUser,
-    token,
+    token: {
+      accessToken,
+      refreshToken,
+    },
   };
+};
+
+export const meService = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    omit: {
+      password: true,
+    },
+  });
+
+  return user;
+};
+
+export const refreshTokenService = async (refreshToken: string) => {
+  const refreshIsValid = await verifyRefreshJwt(refreshToken);
+
+  if (!refreshIsValid) {
+    throw new BadRequestError("Invalid refresh token");
+  }
+
+  const payload = {
+    userId: refreshIsValid.userId,
+    email: refreshIsValid.email,
+    role: refreshIsValid.role,
+  };
+
+  const newAccessToken = signJwt(payload);
+  const newRefreshToken = signRefreshJwt(payload);
+
+  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
