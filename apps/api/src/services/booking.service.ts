@@ -1,64 +1,32 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { BadRequestError } from "../shared/errors/BadRequestError";
 
-export async function createBookingWithLock({
-  userId,
-  scheduleId,
-  seatIds,
-}: {
+export type bookingPayload = {
   userId: string;
   scheduleId: string;
   seatIds: string[];
-}) {
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + 10 * 60 * 1000);
-  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    const lockedSeats = await tx.bookingSeat.findMany({
-      where: {
-        seat: { id: { in: seatIds } },
-        booking: {
-          scheduleId,
-          status: { in: ["PENDING", "CONFIRMED"] },
-          expiresAt: { gt: now },
-        },
-      },
-    });
-    console.log("Locked seats:", lockedSeats);
-    if (lockedSeats.length > 0) {
-      throw new Error("Seat already booked");
-    }
-
+};
+export async function createBookingService(payload: bookingPayload) {
+  const data = await prisma.$transaction(async (tx) => {
     const booking = await tx.booking.create({
       data: {
-        userId,
-        scheduleId,
+        userId: payload.userId,
+        scheduleId: payload.scheduleId,
         status: "PENDING",
-        expiresAt,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60),
       },
     });
 
-    await tx.bookingSeat.createMany({
-      data: seatIds.map((seatId) => ({
+    const bookingSeats = await tx.bookingSeat.createMany({
+      data: payload.seatIds.map((id) => ({
         bookingId: booking.id,
-        seatId,
+        seatId: id,
+        scheduleId: payload.scheduleId,
       })),
     });
 
-    return booking;
+    return { booking, bookingSeats };
   });
-}
 
-export async function createBookingService(booking: {
-  userId: string;
-  scheduleId: string;
-  seatIds: string[];
-}) {
-  if (!booking.userId) {
-    throw new BadRequestError("userId is required");
-  }
-  return {
-    message: "Booking service connected",
-    booking,
-  };
+  return data;
 }

@@ -1,9 +1,9 @@
-import { createBookingWithLock } from "../services/booking.service";
+import { createBookingService } from "../services/booking.service";
 
 //  delete the bookingSeat and booking entries created by this script after testing to avoid data pollution
 async function run() {
   try {
-    const booking = await createBookingWithLock({
+    const booking = await createBookingService({
       userId: "9ef474d3-86a3-40e3-a3ff-99b23af63bc4",
       scheduleId: "666aaf77-a380-41cf-b6a4-024d7e6834d6",
       seatIds: [
