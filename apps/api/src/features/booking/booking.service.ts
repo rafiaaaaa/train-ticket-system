@@ -1,5 +1,4 @@
-import { prisma } from "../lib/prisma";
-import { BadRequestError } from "../shared/errors/BadRequestError";
+import { prisma } from "../../lib/prisma";
 
 export type bookingPayload = {
   userId: string;

@@ -4,6 +4,8 @@ import routes from "./routes/index.route";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middlewares/error.middleware";
+import cron from "node-cron";
+import { expireBookings } from "./features/booking/jobs/expire-booking.job";
 
 const app = express();
 
@@ -15,5 +17,6 @@ app.use(morgan("dev"));
 app.use(routes);
 
 app.use(errorHandler);
+cron.schedule("* * * * *", expireBookings);
 
 export default app;
