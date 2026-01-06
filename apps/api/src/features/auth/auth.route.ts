@@ -7,7 +7,7 @@ import {
   me,
   refresh,
   registerUser,
-} from "../controllers/auth.controller";
+} from "../features/auth/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();

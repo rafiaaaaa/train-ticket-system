@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { createBookingService } from "../services/booking.service";
+import { createBookingService } from "./booking.service";
 
 describe("createBookingService", () => {
   test("should create booking successfully", async () => {

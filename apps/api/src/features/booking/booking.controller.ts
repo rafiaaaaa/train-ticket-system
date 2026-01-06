@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createBookingService } from "../services/booking.service";
+import { createBookingService } from "./booking.service";
 
 export async function createBookingController(req: Request, res: Response) {
   const userId = req.user?.userId;

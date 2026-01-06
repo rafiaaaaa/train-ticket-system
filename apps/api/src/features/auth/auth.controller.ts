@@ -5,8 +5,8 @@ import {
   meService,
   refreshTokenService,
   registerService,
-} from "../services/auth.service";
-import { BadRequestError } from "../shared/errors/BadRequestError";
+} from "./auth.service";
+import { BadRequestError } from "../../shared/errors/BadRequestError";
 
 export const registerUser = async (req: Request, res: Response) => {
   const user = await registerService(req.body);

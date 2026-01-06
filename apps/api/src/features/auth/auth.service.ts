@@ -1,11 +1,10 @@
-import { prisma } from "../lib/prisma";
-import { LoginRequest, RegisterRequest } from "../validators/auth.schema";
-import { BadRequestError } from "../shared/errors/BadRequestError";
-import { signJwt, signRefreshJwt, verifyRefreshJwt } from "../utils/jwt";
+import { prisma } from "../../lib/prisma";
+import { LoginRequest, RegisterRequest } from "./auth.schema";
+import { BadRequestError } from "../../shared/errors/BadRequestError";
+import { signJwt, signRefreshJwt, verifyRefreshJwt } from "../../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
-import { bcryptCompare, bcryptHash } from "../utils/bcrypt";
-import crypto from "crypto";
-import { hashToken } from "../utils/token-hash";
+import { bcryptCompare, bcryptHash } from "../../utils/bcrypt";
+import { hashToken } from "../../utils/token-hash";
 
 export const registerService = async (data: RegisterRequest) => {
   const { email, first_name, last_name } = data;
