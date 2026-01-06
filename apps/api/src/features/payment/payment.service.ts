@@ -1,32 +1,37 @@
 import { prisma } from "../../lib/prisma";
+import { BadRequestError } from "../../shared/errors/BadRequestError";
+import { ConflictError } from "../../shared/errors/ConflictError";
+import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export async function payBooking({
   bookingId,
+  userId,
   amount,
 }: {
   bookingId: string;
+  userId: string;
   amount: number;
 }) {
   return prisma.$transaction(async (tx) => {
     const booking = await tx.booking.findUnique({
-      where: { id: bookingId },
+      where: { id: bookingId, userId },
       include: { payment: true },
     });
 
     if (!booking) {
-      throw new Error("Booking not found");
+      throw new NotFoundError("Booking not found");
     }
 
     if (booking.status === "EXPIRED") {
-      throw new Error("Booking expired");
+      throw new BadRequestError("Booking expired");
     }
 
     if (booking.payment) {
-      throw new Error("Payment already exists");
+      throw new ConflictError("Payment already exists");
     }
 
     if (booking.status !== "PENDING") {
-      throw new Error("Booking already processed");
+      throw new ConflictError("Booking already processed");
     }
 
     const payment = await tx.payment.create({
