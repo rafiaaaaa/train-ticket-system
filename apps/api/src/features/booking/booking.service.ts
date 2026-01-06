@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma";
+import { ConflictError } from "../../shared/errors/ConflictError";
 
 export type bookingPayload = {
   userId: string;
@@ -22,7 +23,12 @@ export async function createBookingService(payload: bookingPayload) {
         seatId: id,
         scheduleId: payload.scheduleId,
       })),
+      skipDuplicates: true,
     });
+
+    if (bookingSeats.count < payload.seatIds.length) {
+      throw new ConflictError("Seats are not available");
+    }
 
     return { booking, bookingSeats };
   });
