@@ -25,10 +25,10 @@ export function Navbar() {
   }, []);
 
   return (
-    <header
-      className={`fixed w-full z-50 transition-all duration-100 ease-in-out overflow-hidden ${
-        scrolled ? "top-0 bg-card/50" : "top-0 bg-transparent "
-      } ${mobileMenuOpen || scrolled ? "backdrop-blur-lg" : ""}`}
+    <div
+      className={`${scrolled ? "top-0 bg-card/50" : "top-0 bg-transparent "} ${
+        mobileMenuOpen || scrolled ? "backdrop-blur-lg" : ""
+      }`}
     >
       <div className="container relative top-0 mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -101,6 +101,6 @@ export function Navbar() {
           </div>
         )}
       </div>
-    </header>
+    </div>
   );
 }
