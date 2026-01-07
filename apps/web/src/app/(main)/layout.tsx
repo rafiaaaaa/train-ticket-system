@@ -30,11 +30,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
       >
         <header
-          className={`sticky top-0 w-full z-50 transition-all duration-100 ease-in-out overflow-hidden`}
+          className={`sticky top-0 w-full z-50 transition-all duration-100 ease-in-out overflow-hidden bg-secondary`}
         >
           <Navbar />
         </header>
-        {children}
+        <main className="min-h-screen bg-white">{children}</main>
         <Footer />
       </body>
     </html>

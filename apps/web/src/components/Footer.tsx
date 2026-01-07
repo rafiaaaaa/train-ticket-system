@@ -13,7 +13,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer id="contact" className="bg-foreground text-background py-16">
+    <footer id="contact" className="bg-background text-foreground py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
           {/* Brand Column */}
@@ -26,7 +26,7 @@ export function Footer() {
               />
               <span className="text-xl font-bold">RailWay</span>
             </a>
-            <p className="text-background/70 mb-6 max-w-sm">
+            <p className="text-foreground/70 mb-6 max-w-sm">
               Making train travel accessible, affordable, and enjoyable for
               everyone. Your journey starts with us.
             </p>
@@ -35,7 +35,7 @@ export function Footer() {
                 <a
                   key={index}
                   href="#"
-                  className="h-10 w-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-background/20 transition-colors"
+                  className="h-10 w-10 rounded-full bg-foreground/10 flex items-center justify-center hover:bg-foreground/20 transition-colors"
                 >
                   <Icon className="h-5 w-5" />
                 </a>
@@ -52,7 +52,7 @@ export function Footer() {
                   <li key={link}>
                     <a
                       href="#"
-                      className="text-background/70 hover:text-background transition-colors"
+                      className="text-foreground/70 hover:text-foreground transition-colors"
                     >
                       {link}
                     </a>
@@ -64,26 +64,26 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-background/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-background/60">
+        <div className="pt-8 border-t border-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-foreground/60">
             © 2026 RailWay. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a
               href="#"
-              className="text-sm text-background/60 hover:text-background transition-colors"
+              className="text-sm text-foreground/60 hover:text-foreground transition-colors"
             >
               Terms
             </a>
             <a
               href="#"
-              className="text-sm text-background/60 hover:text-background transition-colors"
+              className="text-sm text-foreground/60 hover:text-foreground transition-colors"
             >
               Privacy
             </a>
             <a
               href="#"
-              className="text-sm text-background/60 hover:text-background transition-colors"
+              className="text-sm text-foreground/60 hover:text-foreground transition-colors"
             >
               Cookies
             </a>

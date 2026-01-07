@@ -39,13 +39,17 @@ export function Navbar() {
               alt="RailWay Logo"
               className="h-10 w-10 rounded-xl object-cover transition-transform group-hover:scale-105"
             />
-            <span className="text-xl font-bold text-foreground">RailWay</span>
+            <span className="text-xl font-bold text-primary">RailWay</span>
           </a>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a key={link.label} href={link.href} className="nav-link">
+              <a
+                key={link.label}
+                href={link.href}
+                className="nav-link text-primary"
+              >
                 {link.label}
               </a>
             ))}
@@ -53,7 +57,7 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
+            <Button variant="default" size="sm">
               Log in
             </Button>
             <Button variant="default" size="sm">
@@ -68,9 +72,9 @@ export function Navbar() {
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <X className="h-6 w-6 text-foreground" />
+              <X className="h-6 w-6 text-primary" />
             ) : (
-              <Menu className="h-6 w-6 text-foreground" />
+              <Menu className="h-6 w-6 text-primary" />
             )}
           </button>
         </div>
@@ -83,7 +87,7 @@ export function Navbar() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="px-4 py-3 rounded-lg text-foreground hover:bg-secondary transition-colors"
+                  className="px-4 py-3 rounded-lg text-primary hover:bg-secondary transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
