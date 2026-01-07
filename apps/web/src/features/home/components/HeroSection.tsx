@@ -1,3 +1,4 @@
+import { Section } from "@/components/ui/section";
 import { SearchForm } from "./SearchForm";
 import { Sparkles, Shield, Clock } from "lucide-react";
 
@@ -9,7 +10,7 @@ const features = [
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-visible min-h-150 md:min-h-175 flex items-center">
+    <Section className="min-h-screen flex items-center overflow-visible">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50"
@@ -57,6 +58,6 @@ export function HeroSection() {
           <SearchForm />
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
