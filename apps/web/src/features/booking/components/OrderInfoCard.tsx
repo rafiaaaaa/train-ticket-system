@@ -28,7 +28,7 @@ export function OrderInfoCard({
     <Card className="border-border/50 shadow-soft">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
-          <Train className="w-5 h-5 text-primary" />
+          <Train className="w-5 h-5 text-secondary" />
           Order Information
         </CardTitle>
       </CardHeader>
@@ -82,7 +82,7 @@ export function OrderInfoCard({
             <div className="flex items-center gap-2">
               <span className="text-sm text-foreground">{classType}</span>
               <span className="text-muted-foreground">•</span>
-              <span className="text-sm font-medium text-primary">
+              <span className="text-sm font-medium text-bg-primary">
                 {seats.join(", ")}
               </span>
             </div>
