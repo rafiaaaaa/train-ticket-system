@@ -49,7 +49,7 @@ const getStatusBadgeColor = (status: BookingStatus) => {
 
 export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
   return (
-    <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+    <div className="bg-card rounded-2xl p-6 shadow-xl border-2 border-green-500 border-slate-800/30">
       <div className="flex items-center justify-between mb-6">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -80,7 +80,7 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
       <div className="relative flex items-start justify-between mb-6">
         {/* Progress Line Background - positioned at center of 48px circles (24px from top) */}
         <div
-          className="absolute left-0 right-0 h-1 bg-muted"
+          className="absolute left-0 right-0 h-1 bg-secondary/20 z-0"
           style={{ top: "22px", marginLeft: "60px", marginRight: "60px" }}
         />
 
@@ -115,7 +115,7 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
                   state === "active" &&
                     "bg-bg-primary border-primary text-primary",
                   state === "upcoming" &&
-                    "bg-muted border-muted-foreground/30 text-muted-foreground"
+                    "bg-slate-100 border-muted-foreground/30 text-muted-foreground"
                 )}
                 whileHover={{ scale: 1.05 }}
               >

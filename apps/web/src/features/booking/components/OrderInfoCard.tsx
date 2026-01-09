@@ -25,7 +25,7 @@ export function OrderInfoCard({
   seats,
 }: OrderInfoCardProps) {
   return (
-    <Card className="border-border/50 shadow-soft">
+    <Card className="shadow-xl border border-slate-400/30">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
           <Train className="w-5 h-5 text-secondary" />

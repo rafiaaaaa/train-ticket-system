@@ -45,10 +45,10 @@ export function PaymentSummaryCard({
   };
 
   return (
-    <Card className="border-border/50 shadow-soft">
+    <Card className="shadow-xl border border-slate-400/30">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-primary" />
+          <CreditCard className="w-5 h-5 text-secondary" />
           Payment Summary
         </CardTitle>
       </CardHeader>
@@ -71,12 +71,12 @@ export function PaymentSummaryCard({
 
         {/* Total */}
         <div className="flex justify-between items-center">
-          <span className="font-semibold text-foreground">Total</span>
+          <span className="font-semibold text-secondary">Total</span>
           <motion.span
             key={total}
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
-            className="text-xl font-bold text-primary"
+            className="text-xl font-bold text-secondary"
           >
             {formatPrice(total)}
           </motion.span>

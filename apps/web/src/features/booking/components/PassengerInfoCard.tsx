@@ -12,10 +12,10 @@ interface PassengerInfoCardProps {
 
 export function PassengerInfoCard({ passengers }: PassengerInfoCardProps) {
   return (
-    <Card className="border-border/50 shadow-soft">
+    <Card className="shadow-xl border border-slate-400/30">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
-          <User className="w-5 h-5 text-primary" />
+          <User className="w-5 h-5 text-secondary" />
           Passenger Information
         </CardTitle>
       </CardHeader>
@@ -25,7 +25,7 @@ export function PassengerInfoCard({ passengers }: PassengerInfoCardProps) {
             <div key={index} className="p-4 bg-muted/50 rounded-xl space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary" />
+                  <User className="w-4 h-4 text-secondary" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">
@@ -37,7 +37,7 @@ export function PassengerInfoCard({ passengers }: PassengerInfoCardProps) {
                 </div>
               </div>
               <div className="flex items-center gap-2 pl-10">
-                <CreditCard className="w-3.5 h-3.5 text-muted-foreground" />
+                <CreditCard className="w-3.5 h-3.5 text-secondary" />
                 <span className="text-sm text-muted-foreground font-mono">
                   {passenger.idNumber}
                 </span>
