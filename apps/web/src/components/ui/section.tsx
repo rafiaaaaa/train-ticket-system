@@ -10,7 +10,7 @@ export function Section({ children, className, as = "section" }: SectionProps) {
   const Component = as;
 
   return (
-    <Component className={cn("relative w-full px-4", className)}>
+    <Component className={cn("relative w-full p-4", className)}>
       {children}
     </Component>
   );
