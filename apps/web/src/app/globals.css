@@ -3,11 +3,13 @@
 :root {
   --primary: white;
   --secondary: black;
+  --btn-primary: var(--color-amber-600);
 }
 
 @theme inline {
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
+  --color-btn-primary: var(--btn-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

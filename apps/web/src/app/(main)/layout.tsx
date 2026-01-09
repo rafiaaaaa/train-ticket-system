@@ -34,7 +34,7 @@ export default function RootLayout({
         >
           <Navbar />
         </header>
-        <main className="min-h-screen bg-white">{children}</main>
+        <main className="min-h-screen bg-slate-100">{children}</main>
         <Footer />
       </body>
     </html>

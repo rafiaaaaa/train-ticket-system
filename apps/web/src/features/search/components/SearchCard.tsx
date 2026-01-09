@@ -1,5 +1,6 @@
 import { Train, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface TrainCardProps {
   name: string;
@@ -72,13 +73,15 @@ export function SearchCard({
             </span>
           </p>
         </div>
-        <Button
-          variant="accent"
-          className="group-hover:shadow-lg transition-shadow"
-        >
-          Book Now
-          <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-        </Button>
+        <Link href={`/schedule/${name}`}>
+          <Button
+            variant="accent"
+            className="group-hover:shadow-lg transition-shadow bg-btn-primary text-primary cursor-pointer"
+          >
+            Book Now
+            <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </Link>
       </div>
     </div>
   );

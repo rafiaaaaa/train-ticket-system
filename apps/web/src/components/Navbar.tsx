@@ -3,6 +3,7 @@
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const navLinks = [
   { label: "Home", href: "#" },
@@ -26,21 +27,21 @@ export function Navbar() {
 
   return (
     <div
-      className={`${scrolled ? "top-0 bg-card/50" : "top-0 bg-transparent "} ${
+      className={`${scrolled ? "top-0 bg-card/50" : "top-0 bg-transparent"} ${
         mobileMenuOpen || scrolled ? "backdrop-blur-lg" : ""
-      }`}
+      } transition-all duration-300 ease-in-out`}
     >
       <div className="container relative top-0 mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group">
             <img
               src={"/assets/railway-logo.png"}
               alt="RailWay Logo"
               className="h-10 w-10 rounded-xl object-cover transition-transform group-hover:scale-105"
             />
             <span className="text-xl font-bold text-primary">RailWay</span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">

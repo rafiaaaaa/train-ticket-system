@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 
 const popularStations = [
   "New York Penn Station",
@@ -194,14 +195,16 @@ export function SearchForm() {
 
           {/* Search Button */}
           <div className="md:col-span-full">
-            <Button
-              variant="hero"
-              size="lg"
-              className="w-full h-12 bg-amber-600 shadow-lg shadow-amber-600/50 hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-500/50 active:bg-amber-600 active:shadow-lg active:shadow-amber-600/50 cursor-pointer"
-            >
-              Search
-              <ArrowRight className="h-5 w-5 ml-1" />
-            </Button>
+            <Link href={"/search"}>
+              <Button
+                variant="hero"
+                size="lg"
+                className="w-full h-12 bg-amber-600 shadow-lg shadow-amber-600/50 hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-500/50 active:bg-amber-600 active:shadow-lg active:shadow-amber-600/50 cursor-pointer"
+              >
+                Search
+                <ArrowRight className="h-5 w-5 ml-1" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

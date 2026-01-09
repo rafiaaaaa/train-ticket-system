@@ -44,7 +44,7 @@ const featuredTrains = [
 
 export default function SearchResult() {
   return (
-    <section id="promotions" className="py-16 md:py-24 bg-slate-100">
+    <section id="promotions" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
