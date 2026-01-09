@@ -76,7 +76,7 @@ export function SearchCard({
         <Link href={`/schedule/${name}`}>
           <Button
             variant="accent"
-            className="group-hover:shadow-lg transition-shadow bg-btn-primary text-primary cursor-pointer"
+            className="group-hover:shadow-lg transition-shadow bg-bg-primary text-primary cursor-pointer"
           >
             Book Now
             <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />

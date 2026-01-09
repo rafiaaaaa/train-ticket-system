@@ -115,7 +115,7 @@ const Index = () => {
         <div className="mt-8 text-center">
           <p className="text-sm text-muted-foreground">
             Need help?{" "}
-            <a href="#" className="text-primary hover:underline font-medium">
+            <a href="#" className="text-bg-primary hover:underline font-medium">
               Contact support
             </a>
           </p>

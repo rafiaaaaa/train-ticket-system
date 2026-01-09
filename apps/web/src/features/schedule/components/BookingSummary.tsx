@@ -61,7 +61,7 @@ const BookingSummary = ({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="bg-seat-selected text-seat-selected-foreground px-2 py-0.5 rounded text-xs font-medium"
+                    className="bg-bg-primary text-primary px-2 py-0.5 rounded text-xs font-medium"
                   >
                     {seat}
                   </motion.span>
@@ -133,7 +133,7 @@ const BookingSummary = ({
         <Button
           onClick={onConfirm}
           disabled={!hasSelection}
-          className="w-full bg-btn-primary text-primary"
+          className="w-full bg-bg-primary text-primary"
           size="lg"
         >
           <Check className="w-4 h-4 mr-2" />

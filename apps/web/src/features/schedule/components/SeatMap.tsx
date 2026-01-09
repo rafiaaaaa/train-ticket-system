@@ -27,7 +27,7 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
       case "available":
         return cn(
           base,
-          "bg-btn-primary/90 text-primary hover:bg-btn-primary cursor-pointer hover:scale-105 hover:shadow-md"
+          "bg-bg-primary/90 text-primary hover:bg-bg-primary cursor-pointer hover:scale-105 hover:shadow-md"
         );
 
       case "selected":
@@ -146,7 +146,7 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
       <div className="mt-6 pt-4 border-t border-border">
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-btn-primary border border-slate-200" />
+            <div className="w-5 h-5 rounded bg-bg-primary border border-slate-200" />
             <span className="text-muted-foreground">Available</span>
           </div>
 
