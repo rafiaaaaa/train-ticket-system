@@ -13,7 +13,6 @@ export const getSeatService = async (scheduleId: string) => {
     throw new NotFoundError("Schedule not found");
   }
 
-  // Ambil seat yang sudah ter-book
   const bookedSeats = await prisma.bookingSeat.findMany({
     where: { scheduleId },
     select: { seatId: true },
@@ -30,4 +29,42 @@ export const getSeatService = async (scheduleId: string) => {
     ...seat,
     isAvailable: !bookedSeatIds.includes(seat.id),
   }));
+};
+
+export const getTrainSchedulesService = async (params: {
+  originCode?: string;
+  destinationCode?: string;
+  startDate?: Date;
+  endDate?: Date;
+}) => {
+  const { originCode, destinationCode, startDate, endDate } = params;
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      route: {
+        originStation: { code: originCode },
+        destinationStation: { code: destinationCode },
+      },
+      departureTime: {
+        gte: startDate,
+        lt: endDate,
+      },
+    },
+    include: {
+      train: true,
+      route: {
+        include: {
+          originStation: true,
+          destinationStation: true,
+        },
+      },
+      _count: {
+        select: {
+          bookingSeats: true,
+        },
+      },
+    },
+  });
+
+  return schedules;
 };

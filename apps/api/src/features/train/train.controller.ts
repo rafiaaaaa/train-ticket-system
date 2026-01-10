@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getSeatService } from "./seat.service";
+import { getSeatService, getTrainSchedulesService } from "./train.service";
 import { BadRequestError } from "../../shared/errors/BadRequestError";
 
 export const getSeats = async (req: Request, res: Response) => {
@@ -14,5 +14,16 @@ export const getSeats = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     data: seats,
+  });
+};
+
+export const getTrainSchedules = async (req: Request, res: Response) => {
+  const params = await req.query;
+
+  const data = await getTrainSchedulesService(params);
+
+  return res.status(200).json({
+    succes: true,
+    data,
   });
 };
