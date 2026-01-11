@@ -13,7 +13,9 @@ export default function RootLayout({
       >
         <Navbar />
       </header>
-      <main className="min-h-screen bg-slate-100">{children}</main>
+      <main className="min-h-screen bg-slate-100 flex flex-col">
+        {children}
+      </main>
       <Footer />
     </>
   );

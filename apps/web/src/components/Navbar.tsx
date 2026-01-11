@@ -58,12 +58,16 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="default" size="sm">
-              Log in
-            </Button>
-            <Button variant="default" size="sm">
-              Sign up
-            </Button>
+            <Link href={`/auth`}>
+              <Button variant="default" size="sm">
+                Log in
+              </Button>
+            </Link>
+            <Link href={`/auth`}>
+              <Button variant="default" size="sm">
+                Sign up
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}

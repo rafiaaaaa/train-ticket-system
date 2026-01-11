@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { Section } from "@/components/ui/section";
 
 export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,17 +24,9 @@ export default function Auth() {
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate loading
     setTimeout(() => setIsLoading(false), 1500);
   };
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Handle sign up form submission
-   * Simulate loading for 1.5 seconds
-   * @param {React.FormEvent} e - Form event
-   */
-  /*******  c5fa09b0-1c79-4ad3-89f6-6516a4e022f0  *******/
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -42,32 +35,10 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="p-4 border-b border-border">
-        <div className="container mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <Image
-              src="/assets/railway-logo.png"
-              alt="RailWay Logo"
-              width={24}
-              height={24}
-              className="h-10 w-10 rounded-xl object-cover transition-transform group-hover:scale-105"
-            />
-            <span className="text-xl font-bold text-foreground">RailWay</span>
-          </Link>
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
-      </header>
-
+    <>
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-border/50 shadow-xl">
+      <Section className="flex flex-1 items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-xl">
           <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-4">
               <Image
@@ -219,14 +190,14 @@ export default function Auth() {
                     By signing up, you agree to our{" "}
                     <button
                       type="button"
-                      className="text-primary hover:underline"
+                      className="text-bg-primary hover:underline"
                     >
                       Terms of Service
                     </button>{" "}
                     and{" "}
                     <button
                       type="button"
-                      className="text-primary hover:underline"
+                      className="text-bg-primary hover:underline"
                     >
                       Privacy Policy
                     </button>
@@ -236,7 +207,7 @@ export default function Auth() {
             </Tabs>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </Section>
+    </>
   );
 }
