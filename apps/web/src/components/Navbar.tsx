@@ -2,10 +2,11 @@
 
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { logout } from "@/features/auth/api/logout";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Home", href: "#" },
@@ -17,7 +18,25 @@ const navLinks = [
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const { signOut, user, loading } = useAuth();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,15 +46,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push("/auth");
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <div
@@ -70,19 +80,62 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href={`/auth`}>
-              <Button variant="default" size="sm">
-                Log in
-              </Button>
-            </Link>
-            <Link href={`/auth`}>
-              <Button variant="default" size="sm">
-                Sign up
-              </Button>
-            </Link>
-            <Button variant="default" onClick={handleLogout} className="flex-1">
-              Logout
-            </Button>
+            {!user ? (
+              <>
+                <Link href={`/auth`}>
+                  <Button variant="default" size="sm">
+                    Log in
+                  </Button>
+                </Link>
+                <Link href={`/auth`}>
+                  <Button variant="default" size="sm">
+                    Sign up
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <div ref={dropdownRef} className="relative">
+                <button
+                  onClick={() => setOpen((prev) => !prev)}
+                  className="flex items-center gap-2 btn btn-default btn-sm text-primary"
+                >
+                  {user.first_name + " " + user.last_name}
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    ></path>
+                  </svg>
+                </button>
+
+                {open && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-99999">
+                    <Link href="/profile">
+                      <button
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOpen(false)}
+                      >
+                        Profile
+                      </button>
+                    </Link>
+
+                    <button
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      onClick={signOut}
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

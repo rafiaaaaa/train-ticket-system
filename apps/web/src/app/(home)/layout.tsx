@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <>
       <header
-        className={`fixed w-full z-50 transition-all duration-100 ease-in-out overflow-hidden`}
+        className={`fixed w-full z-50 transition-all duration-100 ease-in-out`}
       >
         <Navbar />
       </header>
