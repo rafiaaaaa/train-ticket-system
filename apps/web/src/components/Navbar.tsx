@@ -4,6 +4,8 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { logout } from "@/features/auth/api/logout";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { label: "Home", href: "#" },
@@ -15,6 +17,7 @@ const navLinks = [
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +27,15 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/auth");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div
@@ -68,6 +80,9 @@ export function Navbar() {
                 Sign up
               </Button>
             </Link>
+            <Button variant="default" onClick={handleLogout} className="flex-1">
+              Logout
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}

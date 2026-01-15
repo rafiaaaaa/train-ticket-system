@@ -10,6 +10,7 @@ import { login } from "../api/login";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@repo/shared";
+import { useRouter } from "next/navigation";
 
 export const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,13 +22,17 @@ export const SignInForm = () => {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
+  const router = useRouter();
 
   const handleSignIn = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
       toast.promise(login(data), {
         loading: "Logging in...",
-        success: "Logged in successfully",
+        success: () => {
+          router.refresh();
+          return "Logged in successfully";
+        },
         error: (err) => err.message,
       });
     } catch (error) {
