@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { login, LoginPayload } from "../api/login";
+import { login } from "../api/login";
 import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "@repo/shared";
 
 export const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,12 +18,14 @@ export const SignInForm = () => {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm();
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
 
   const handleSignIn = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
-      toast.promise(login(data as LoginPayload), {
+      toast.promise(login(data), {
         loading: "Logging in...",
         success: "Logged in successfully",
         error: (err) => err.message,
@@ -32,7 +36,7 @@ export const SignInForm = () => {
       setIsLoading(false);
     }
   });
-  
+
   return (
     <>
       <form onSubmit={handleSignIn} className="space-y-4">
@@ -45,9 +49,12 @@ export const SignInForm = () => {
               type="email"
               placeholder="Enter your email"
               className="pl-10"
-              {...register("email", { required: true })}
+              {...register("email")}
             />
           </div>
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
@@ -58,9 +65,9 @@ export const SignInForm = () => {
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               className="pl-10 pr-10"
-              required
-              {...register("password", { required: true })}
+              {...register("password")}
             />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -73,6 +80,9 @@ export const SignInForm = () => {
               )}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
         </div>
         <div className="flex items-center justify-end">
           <button

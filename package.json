@@ -1,0 +1,28 @@
+{
+  "name": "train-ticket-system",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev:api": "bun --filter api dev",
+    "dev:web": "bun --filter web dev",
+    "build:all": "bun run --filter '*' build",
+    "build:api": "bun --filter api build",
+    "build:web": "bun --filter web build",
+    "start:api": "bun --filter api start",
+    "start:web": "bun --filter web start"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "zod": "^4.3.5"
+  }
+}

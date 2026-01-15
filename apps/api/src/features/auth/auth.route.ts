@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "../../middlewares/validate";
-import { loginSchema, registerSchema } from "./auth.schema";
+import { loginSchema, registerSchema } from "@repo/shared";
 import {
   loginUser,
   logout,

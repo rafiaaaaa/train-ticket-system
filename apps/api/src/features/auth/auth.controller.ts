@@ -10,7 +10,6 @@ import { BadRequestError } from "../../shared/errors/BadRequestError";
 
 export const registerUser = async (req: Request, res: Response) => {
   const user = await registerService(req.body);
-
   return res.status(201).json({
     success: true,
     data: user,

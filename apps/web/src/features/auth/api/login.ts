@@ -1,11 +1,7 @@
 import { api } from "@/utils/api";
+import { LoginRequest } from "@repo/shared";
 
-export type LoginPayload = {
-  email: string;
-  password: string;
-};
-
-export const login = (payload: LoginPayload) => {
+export const login = (payload: LoginRequest) => {
   const user = api("/auth/login", {
     method: "POST",
     body: payload,
