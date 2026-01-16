@@ -68,3 +68,20 @@ export const getTrainSchedulesService = async (params: {
 
   return schedules;
 };
+
+export const getStationsService = async (params: string) => {
+  const stations = await prisma.station.findMany({
+    where: {
+      name: {
+        contains: params,
+        mode: "insensitive",
+      },
+    },
+    select: {
+      name: true,
+      code: true,
+    },
+  });
+
+  return stations;
+};
