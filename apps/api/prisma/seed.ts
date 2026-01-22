@@ -1,34 +1,27 @@
 import { prisma } from "../src/lib/prisma";
 import { bcryptHash } from "../src/utils/bcrypt";
 
-const IDS = {
-  user: "11111111-1111-4111-8111-111111111111",
+const USER_ID = "11111111-1111-4111-8111-111111111111";
 
-  station: {
-    JKT: "22222222-2222-4222-8222-222222222221",
-    SBY: "22222222-2222-4222-8222-222222222222",
-  },
-
-  route: "33333333-3333-4333-8333-333333333333",
-
-  train: "44444444-4444-4444-8444-444444444444",
-
-  seat: {
-    A1: "55555555-5555-4555-8555-555555555551",
-    A2: "55555555-5555-4555-8555-555555555552",
-    A3: "55555555-5555-4555-8555-555555555553",
-    A4: "55555555-5555-4555-8555-555555555554",
-  },
-
-  schedule: "66666666-6666-4666-8666-666666666666",
-};
+/* ================= STATIONS ================= */
+const STATIONS = [
+  { code: "JKT", name: "Jakarta", city: "Jakarta" },
+  { code: "BDG", name: "Bandung", city: "Bandung" },
+  { code: "CBN", name: "Cirebon", city: "Cirebon" },
+  { code: "SMG", name: "Semarang", city: "Semarang" },
+  { code: "YGY", name: "Yogyakarta", city: "Yogyakarta" },
+  { code: "SOC", name: "Solo", city: "Surakarta" },
+  { code: "SBY", name: "Surabaya", city: "Surabaya" },
+  { code: "MLG", name: "Malang", city: "Malang" },
+];
 
 async function seed() {
+  /* ================= USER ================= */
   await prisma.user.upsert({
-    where: { id: IDS.user },
+    where: { id: USER_ID },
     update: {},
     create: {
-      id: IDS.user,
+      id: USER_ID,
       email: "test@example.com",
       password: await bcryptHash("password"),
       first_name: "Demo",
@@ -36,83 +29,89 @@ async function seed() {
     },
   });
 
-  const origin = await prisma.station.upsert({
-    where: { id: IDS.station.JKT },
-    update: {},
-    create: {
-      id: IDS.station.JKT,
-      name: "Jakarta",
-      code: "JKT",
-      city: "Jakarta",
-    },
-  });
+  /* ================= STATION ================= */
+  const stationMap: Record<string, string> = {};
 
-  const destination = await prisma.station.upsert({
-    where: { id: IDS.station.SBY },
-    update: {},
-    create: {
-      id: IDS.station.SBY,
-      name: "Surabaya",
-      code: "SBY",
-      city: "Surabaya",
-    },
-  });
+  for (const station of STATIONS) {
+    const result = await prisma.station.upsert({
+      where: { code: station.code },
+      update: {},
+      create: station,
+    });
+    stationMap[station.code] = result.id;
+  }
 
-  await prisma.route.upsert({
-    where: { id: IDS.route },
-    update: {},
-    create: {
-      id: IDS.route,
-      originStationId: origin.id,
-      destinationStationId: destination.id,
-    },
-  });
+  /* ================= ROUTES (ALL COMBINATIONS) ================= */
+  const routes = [];
 
-  await prisma.train.upsert({
-    where: { id: IDS.train },
-    update: {},
-    create: {
-      id: IDS.train,
-      name: "Argo Bromo",
-      code: "ARGO-01",
-      totalSeats: 2,
-    },
-  });
+  for (const from of STATIONS) {
+    for (const to of STATIONS) {
+      if (from.code !== to.code) {
+        routes.push({
+          id: crypto.randomUUID(),
+          originStationId: stationMap[from.code]!,
+          destinationStationId: stationMap[to.code]!,
+        });
+      }
+    }
+  }
 
-  await prisma.seat.upsert({
-    where: { id: IDS.seat.A1 },
-    update: {},
-    create: {
-      id: IDS.seat.A1,
-      trainId: IDS.train,
-      number: "A1",
-    },
-  });
+  await prisma.route.createMany({ data: routes });
 
-  await prisma.seat.upsert({
-    where: { id: IDS.seat.A2 },
-    update: {},
-    create: {
-      id: IDS.seat.A2,
-      trainId: IDS.train,
-      number: "A2",
-    },
-  });
+  /* ================= TRAINS ================= */
+  const TRAIN_COUNT = 10;
+  const SEATS_PER_TRAIN = 30;
+  const ROWS = ["A", "B", "C", "D", "E", "F"];
 
-  await prisma.schedule.upsert({
-    where: { id: IDS.schedule },
-    update: {},
-    create: {
-      id: IDS.schedule,
-      trainId: IDS.train,
-      routeId: IDS.route,
-      departureTime: new Date("2026-01-01T08:00:00.000Z"),
-      arrivalTime: new Date("2026-01-01T12:00:00.000Z"),
-      price: 250000,
-    },
-  });
+  const allRoutes = await prisma.route.findMany();
 
-  console.log("✅ SEED DONE (STABLE IDS)");
+  for (let i = 1; i <= TRAIN_COUNT; i++) {
+    const trainId = crypto.randomUUID();
+
+    await prisma.train.create({
+      data: {
+        id: trainId,
+        name: `Argo Nusantara ${i}`,
+        code: `ARGO-${i.toString().padStart(2, "0")}`,
+        totalSeats: SEATS_PER_TRAIN,
+      },
+    });
+
+    /* ===== SEATS ===== */
+    const seats = [];
+
+    for (const row of ROWS) {
+      for (let n = 1; n <= 5; n++) {
+        seats.push({
+          id: crypto.randomUUID(),
+          trainId,
+          number: `${row}${n}`,
+        });
+      }
+    }
+
+    await prisma.seat.createMany({ data: seats });
+
+    /* ===== SCHEDULE (random route) ===== */
+    const route = allRoutes[Math.floor(Math.random() * allRoutes.length)]!;
+
+    await prisma.schedule.create({
+      data: {
+        id: crypto.randomUUID(),
+        trainId,
+        routeId: route.id,
+        departureTime: new Date(
+          `2026-01-${(i + 5).toString().padStart(2, "0")}T08:00:00Z`,
+        ),
+        arrivalTime: new Date(
+          `2026-01-${(i + 5).toString().padStart(2, "0")}T12:00:00Z`,
+        ),
+        price: 180000 + i * 15000,
+      },
+    });
+  }
+
+  console.log("✅ SEED DONE — MULTI STATION, MULTI ROUTE, 10 TRAINS");
 }
 
 seed()

@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-
-type SeatStatus = "available" | "selected" | "occupied";
+import { SeatStatus } from "./SchedulePage";
 
 interface Seat {
   id: string;
+  number: string;
   status: SeatStatus;
 }
 
@@ -18,7 +18,6 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
   for (let i = 0; i < seats.length; i += 4) {
     rows.push(seats.slice(i, i + 4));
   }
-
   const getSeatClasses = (status: SeatStatus) => {
     const base =
       "w-10 h-10 sm:w-12 sm:h-12 rounded-lg font-medium text-xs sm:text-sm flex items-center justify-center transition-all duration-200";
@@ -27,23 +26,18 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
       case "available":
         return cn(
           base,
-          "bg-bg-primary/90 text-primary hover:bg-bg-primary cursor-pointer hover:scale-105 hover:shadow-md"
+          "bg-bg-primary/90 text-primary hover:bg-bg-primary cursor-pointer hover:scale-105 hover:shadow-md",
         );
-
       case "selected":
         return cn(
           base,
-          "bg-blue-600 text-white ring-2 ring-blue-500/30 ring-offset-2 ring-offset-background scale-105 shadow-lg"
+          "bg-blue-600 text-white ring-2 ring-blue-500/30 ring-offset-2 ring-offset-background scale-105 shadow-lg",
         );
-
       case "occupied":
         return cn(
           base,
-          "bg-zinc-300 text-zinc-500 cursor-not-allowed opacity-60"
+          "bg-zinc-300 text-zinc-500 cursor-not-allowed opacity-60",
         );
-
-      default:
-        return base;
     }
   };
 
@@ -89,14 +83,14 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
 
       {/* Seat grid */}
       <div className="overflow-x-auto py-4">
-        <div className="min-w-70 space-y-3">
+        <div className="max-w-96 space-y-3 mx-auto">
           {rows.map((row, rowIndex) => (
             <div
               key={rowIndex}
               className="flex items-center justify-center gap-2 sm:gap-3"
             >
               {/* Left seats */}
-              <div className="flex gap-2">
+              <div className="gap-2 grid grid-cols-2">
                 {row.slice(0, 2).map((seat) => (
                   <motion.button
                     key={seat.id}
@@ -109,7 +103,7 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
                     }
                     disabled={seat.status === "occupied"}
                   >
-                    {seat.id}
+                    {seat.number}
                   </motion.button>
                 ))}
               </div>
@@ -120,7 +114,7 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
               </div>
 
               {/* Right seats */}
-              <div className="flex gap-2">
+              <div className="grid gap-2 grid-cols-2 justify-start">
                 {row.slice(2, 4).map((seat) => (
                   <motion.button
                     key={seat.id}
@@ -133,9 +127,18 @@ const SeatMap = ({ seats, onSeatClick }: SeatMapProps) => {
                     }
                     disabled={seat.status === "occupied"}
                   >
-                    {seat.id}
+                    {seat.number}
                   </motion.button>
                 ))}
+
+                {Array.from({ length: 2 - row.slice(2, 4).length }).map(
+                  (_, i) => (
+                    <div
+                      key={`right-placeholder-${i}`}
+                      className="w-10 h-10 sm:w-12 sm:h-12 invisible"
+                    />
+                  ),
+                )}
               </div>
             </div>
           ))}

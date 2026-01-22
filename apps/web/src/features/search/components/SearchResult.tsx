@@ -1,5 +1,6 @@
 import { SearchCard } from "./SearchCard";
 import { getSchedules } from "../api/getSchedules";
+import { formatTime } from "@/utils/formatTime";
 
 type ScheduleCardData = {
   scheduleId: string;
@@ -66,6 +67,7 @@ export default async function SearchResult({ searchParams = {} }: Props) {
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <SearchCard
+                  id={s.scheduleId}
                   name={s.train.name}
                   departure={s.origin.name}
                   destination={s.destination.name}
@@ -82,13 +84,6 @@ export default async function SearchResult({ searchParams = {} }: Props) {
       </div>
     </section>
   );
-}
-
-function formatTime(date: string) {
-  return new Date(date).toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function calcDuration(start: string, end: string) {

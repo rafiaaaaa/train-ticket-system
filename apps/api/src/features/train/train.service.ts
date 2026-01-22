@@ -6,7 +6,24 @@ export const getSeatService = async (scheduleId: string) => {
   const schedule = await prisma.schedule.findUnique({
     where: { id: scheduleId },
     select: {
+      id: true,
       trainId: true,
+      departureTime: true,
+      arrivalTime: true,
+      price: true,
+      train: {
+        select: {
+          name: true,
+          code: true,
+          totalSeats: true,
+        },
+      },
+      route: {
+        select: {
+          originStation: { select: { name: true } },
+          destinationStation: { select: { name: true } },
+        },
+      },
     },
   });
 
@@ -14,22 +31,40 @@ export const getSeatService = async (scheduleId: string) => {
     throw new NotFoundError("Schedule not found");
   }
 
-  const bookedSeats = await prisma.bookingSeat.findMany({
-    where: { scheduleId },
-    select: { seatId: true },
-  });
-
-  const bookedSeatIds = bookedSeats.map((s) => s.seatId);
+  const bookedSeatIds = new Set(
+    (
+      await prisma.bookingSeat.findMany({
+        where: { scheduleId },
+        select: { seatId: true },
+      })
+    ).map((s) => s.seatId),
+  );
 
   const seats = await prisma.seat.findMany({
     where: { trainId: schedule.trainId },
+    select: {
+      id: true,
+      number: true,
+    },
     orderBy: { number: "asc" },
   });
 
-  return seats.map((seat) => ({
-    ...seat,
-    isAvailable: !bookedSeatIds.includes(seat.id),
-  }));
+  return {
+    schedule: {
+      id: schedule.id,
+      train: schedule.train,
+      origin: schedule.route.originStation.name,
+      destination: schedule.route.destinationStation.name,
+      departureTime: schedule.departureTime,
+      arrivalTime: schedule.arrivalTime,
+      price: schedule.price,
+    },
+    seats: seats.map((seat) => ({
+      id: seat.id,
+      number: seat.number,
+      isAvailable: !bookedSeatIds.has(seat.id),
+    })),
+  };
 };
 
 export const getTrainSchedulesService = async (params: {

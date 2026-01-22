@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface TrainCardProps {
+  id: string;
   name: string;
   departure: string;
   destination: string;
@@ -14,6 +15,7 @@ interface TrainCardProps {
 }
 
 export function SearchCard({
+  id,
   name,
   departure,
   destination,
@@ -73,7 +75,7 @@ export function SearchCard({
             </span>
           </p>
         </div>
-        <Link href={`/schedule/${name}`}>
+        <Link href={`/schedule/${id}`}>
           <Button
             variant="accent"
             className="group-hover:shadow-lg transition-shadow bg-bg-primary text-primary cursor-pointer"
