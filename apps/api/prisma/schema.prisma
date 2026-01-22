@@ -72,6 +72,8 @@ model Schedule {
   bookings Booking[]
 
   createdAt DateTime @default(now())
+
+  @@index([departureTime])
 }
 
 model Seat {

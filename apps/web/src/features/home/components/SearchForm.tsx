@@ -10,54 +10,53 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { getStations } from "@/features/search/api/getStations";
+import { useRouter } from "next/navigation";
 
-const popularStations = [
-  "New York Penn Station",
-  "Los Angeles Union Station",
-  "Chicago Union Station",
-  "Boston South Station",
-  "Washington DC Union Station",
-  "San Francisco",
-  "Seattle King Street",
-  "Philadelphia 30th Street",
-  "Denver Union Station",
-  "Miami Central",
-  "Portland Union Station",
-  "San Diego Santa Fe",
-  "Detroit",
-  "Atlanta Peachtree",
-  "Dallas Union Station",
-];
+type Stations = {
+  name: string;
+  code: string;
+};
 
 interface StationDropdownProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: Stations | null;
+  onChange: (value: Stations) => void;
   placeholder: string;
-  stations: string[];
 }
 
 function StationDropdown({
   value,
   onChange,
   placeholder,
-  stations,
 }: StationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [filteredStations, setFilteredStations] = useState(stations);
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [filteredStations, setFilteredStations] = useState<Stations[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (value) {
-      const filtered = stations.filter((station) =>
-        station.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredStations(filtered.length > 0 ? filtered : stations);
-    } else {
-      setFilteredStations(stations);
+    if (!value?.name) {
+      setFilteredStations([]);
+      return;
     }
-  }, [value, stations]);
+
+    setLoading(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const data = await getStations(value.name);
+        setFilteredStations(data.length ? data : []);
+      } catch (error) {
+        console.error("Failed to fetch stations", error);
+        setFilteredStations([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [value?.name]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -72,7 +71,7 @@ function StationDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (station: string) => {
+  const handleSelect = (station: Stations) => {
     onChange(station);
     setIsOpen(false);
   };
@@ -83,27 +82,30 @@ function StationDropdown({
       <input
         type="text"
         placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={value?.name || ""}
+        onChange={(e) => onChange({ name: e.target.value, code: "" })}
         onFocus={() => setIsOpen(true)}
         className="w-full h-12 pl-11 pr-4 rounded-xl input-search border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
       />
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-2  bg-card border border-border rounded-xl shadow-lg z-50 max-h-64 overflow-y-auto overflow-visible backdrop-blur-xl bg-background">
           <ul className="py-2">
-            {filteredStations.slice(0, 8).map((station) => (
-              <li key={station}>
-                <button
-                  type="button"
-                  onClick={() => handleSelect(station)}
-                  className="w-full px-4 py-3 text-left text-foreground hover:bg-secondary transition-colors flex items-center gap-3"
-                >
-                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="truncate">{station}</span>
-                </button>
-              </li>
-            ))}
-            {filteredStations.length === 0 && (
+            {loading && <LoadingItem />}
+
+            {!loading &&
+              filteredStations.slice(0, 8).map((station) => (
+                <li key={station.code}>
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(station)}
+                    className="w-full px-4 py-3 text-left text-foreground hover:bg-secondary transition-colors flex items-center gap-3"
+                  >
+                    <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <span className="truncate">{station.name}</span>
+                  </button>
+                </li>
+              ))}
+            {!loading && filteredStations.length === 0 && (
               <li className="px-4 py-3 text-muted-foreground text-sm">
                 No stations found
               </li>
@@ -116,15 +118,48 @@ function StationDropdown({
 }
 
 export function SearchForm() {
-  const [departure, setDeparture] = useState("");
-  const [destination, setDestination] = useState("");
+  const [departure, setDeparture] = useState<Stations | null>(null);
+  const [destination, setDestination] = useState<Stations | null>(null);
   const [date, setDate] = useState("");
   const [passengers, setPassengers] = useState("1");
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const swapStations = () => {
-    const temp = departure;
-    setDeparture(destination);
-    setDestination(temp);
+  const handleSearch = () => {
+    const validationError = validateSearch();
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.set("departure", departure!.code);
+    params.set("destination", destination!.code);
+    params.set("date", date);
+    params.set("passengers", passengers);
+
+    router.push(`/search?${params.toString()}`);
+  };
+
+  const validateSearch = () => {
+    if (!departure?.code) {
+      return "Please select departure station";
+    }
+
+    if (!destination?.code) {
+      return "Please select destination station";
+    }
+
+    if (departure.code === destination.code) {
+      return "Departure and destination must be different";
+    }
+
+    if (!date) {
+      return "Please select travel date";
+    }
+
+    return null;
   };
 
   return (
@@ -140,7 +175,6 @@ export function SearchForm() {
               value={departure}
               onChange={setDeparture}
               placeholder="Departure station"
-              stations={popularStations}
             />
           </div>
 
@@ -153,7 +187,6 @@ export function SearchForm() {
               value={destination}
               onChange={setDestination}
               placeholder="Destination station"
-              stations={popularStations}
             />
           </div>
 
@@ -194,20 +227,31 @@ export function SearchForm() {
           </div>
 
           {/* Search Button */}
-          <div className="md:col-span-full">
-            <Link href={"/search"}>
-              <Button
-                variant="hero"
-                size="lg"
-                className="w-full h-12 bg-amber-600 shadow-lg shadow-amber-600/50 hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-500/50 active:bg-amber-600 active:shadow-lg active:shadow-amber-600/50 cursor-pointer"
-              >
-                Search
-                <ArrowRight className="h-5 w-5 ml-1" />
-              </Button>
-            </Link>
+          <div className="md:col-span-full space-y-2">
+            {error && (
+              <div className="md:col-span-full text-sm text-red-500">
+                {error}
+              </div>
+            )}
+            <Button
+              onClick={handleSearch}
+              variant="hero"
+              size="lg"
+              className="w-full h-12 bg-amber-600 shadow-lg shadow-amber-600/50 hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-500/50 active:bg-amber-600 active:shadow-lg active:shadow-amber-600/50 cursor-pointer"
+            >
+              Search
+              <ArrowRight className="h-5 w-5 ml-1" />
+            </Button>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+const LoadingItem = () => (
+  <li className="px-4 py-3 flex items-center gap-3 text-muted-foreground">
+    <span className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+    <span className="text-sm">Searching stations...</span>
+  </li>
+);

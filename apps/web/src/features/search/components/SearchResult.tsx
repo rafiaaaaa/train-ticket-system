@@ -1,75 +1,99 @@
 import { SearchCard } from "./SearchCard";
+import { getSchedules } from "../api/getSchedules";
 
-const featuredTrains = [
-  {
-    name: "Express Sunrise",
-    departure: "New York",
-    destination: "Boston",
-    departureTime: "06:15",
-    arrivalTime: "10:30",
-    duration: "4h 15m",
-    price: 49,
-    tag: "Most Popular",
-  },
-  {
-    name: "Coastal Line",
-    departure: "Los Angeles",
-    destination: "San Diego",
-    departureTime: "09:00",
-    arrivalTime: "11:45",
-    duration: "2h 45m",
-    price: 35,
-    tag: "Best Value",
-  },
-  {
-    name: "Metro Connect",
-    departure: "Chicago",
-    destination: "Detroit",
-    departureTime: "14:30",
-    arrivalTime: "19:15",
-    duration: "4h 45m",
-    price: 55,
-  },
-  {
-    name: "Pacific Voyager",
-    departure: "Seattle",
-    destination: "Portland",
-    departureTime: "08:00",
-    arrivalTime: "11:30",
-    duration: "3h 30m",
-    price: 42,
-    tag: "Scenic Route",
-  },
-];
+type ScheduleCardData = {
+  scheduleId: string;
+  train: {
+    name: string;
+    code: string;
+  };
+  origin: {
+    name: string;
+  };
+  destination: {
+    name: string;
+  };
+  departureTime: string;
+  arrivalTime: string;
+  price: number;
+  availableSeats: number;
+};
 
-export default function SearchResult() {
+type Props = {
+  searchParams?: {
+    departure?: string;
+    destination?: string;
+    date?: string;
+    passengers?: string;
+  };
+};
+
+export default async function SearchResult({ searchParams = {} }: Props) {
+  const { departure, destination, date, passengers = "1" } = await searchParams;
+  if (!departure || !destination || !date) {
+    return (
+      <section className="py-16 text-center text-muted-foreground">
+        Invalid search parameters
+      </section>
+    );
+  }
+
+  const data: ScheduleCardData[] = await getSchedules({
+    from: departure,
+    to: destination,
+    date,
+    passengers,
+  });
   return (
-    <section id="promotions" className="py-16 md:py-24">
+    <section id="search-results" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
             Search Results
           </h2>
-          <p className="text-lg text-muted-secondary max-w-2xl mx-auto">
-            Discover our most-loved train journeys with special promotions and
-            guaranteed comfort.
-          </p>
         </div>
-
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-          {featuredTrains.map((train, index) => (
-            <div
-              key={train.name}
-              className="animate-fade-in h-full"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <SearchCard {...train} />
-            </div>
-          ))}
-        </div>
+        {data.length === 0 && (
+          <div className="text-center text-muted-foreground">
+            No train schedules found
+          </div>
+        )}
+        {data.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {data.map((s, index) => (
+              <div
+                key={s.scheduleId}
+                className="animate-fade-in h-full"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <SearchCard
+                  name={s.train.name}
+                  departure={s.origin.name}
+                  destination={s.destination.name}
+                  departureTime={formatTime(s.departureTime)}
+                  arrivalTime={formatTime(s.arrivalTime)}
+                  duration={calcDuration(s.departureTime, s.arrivalTime)}
+                  price={s.price}
+                  tag={s.availableSeats <= 5 ? "Limited Seats" : undefined}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
+}
+
+function formatTime(date: string) {
+  return new Date(date).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function calcDuration(start: string, end: string) {
+  const diff = new Date(end).getTime() - new Date(start).getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
 }

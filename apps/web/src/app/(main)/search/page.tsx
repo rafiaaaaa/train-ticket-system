@@ -1,8 +1,7 @@
-import { Section } from "@/components/ui/section";
 import SearchResult from "@/features/search/components/SearchResult";
 
-export const SearchPage = () => {
-  return <SearchResult />;
+export const SearchPage = ({ searchParams }: any) => {
+  return <SearchResult searchParams={searchParams} />;
 };
 
 export default SearchPage;
