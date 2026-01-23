@@ -3,8 +3,13 @@ import { AlertCircle, ChevronLeft, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "@/components/Card";
 
+interface SelectedSeat {
+  id: string;
+  number: string;
+}
+
 interface BookingSummaryProps {
-  selectedSeats: string[];
+  selectedSeats: SelectedSeat[];
   pricePerSeat: number;
   onConfirm: () => void;
   onBack: () => void;
@@ -57,13 +62,13 @@ const BookingSummary = ({
               >
                 {selectedSeats.map((seat) => (
                   <motion.span
-                    key={seat}
+                    key={seat.id}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
                     className="bg-bg-primary text-primary px-2 py-0.5 rounded text-xs font-medium"
                   >
-                    {seat}
+                    {seat.number}
                   </motion.span>
                 ))}
               </motion.div>

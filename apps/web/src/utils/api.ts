@@ -6,10 +6,12 @@ type FetchOptions = {
 
 export class ApiError extends Error {
   status: number;
+  data?: any;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, data?: any) {
     super(message);
     this.status = status;
+    this.data = data;
   }
 }
 
@@ -27,14 +29,12 @@ export async function api<T>(url: string, options: FetchOptions = {}) {
   });
 
   if (!res.ok) {
-    let message = "Something went wrong";
-
-    try {
-      const error = await res.json();
-      message = error.message ?? message;
-    } catch {}
-
-    throw new ApiError(message, res.status);
+    const error = await res.json();
+    throw new ApiError(
+      error.message ?? "Something went wrong",
+      res.status,
+      error,
+    );
   }
 
   if (res.status === 204) {

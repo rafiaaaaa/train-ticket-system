@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createBookingController } from "./booking.controller";
 import { validate } from "../../middlewares/validate";
-import { createBookingSchema } from "./booking.schema";
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import { createBookingSchema } from "@repo/shared";
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.post(
   "/",
   authMiddleware,
   validate(createBookingSchema),
-  createBookingController
+  createBookingController,
 );
 
 export default router;

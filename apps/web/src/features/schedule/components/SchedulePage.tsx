@@ -6,6 +6,10 @@ import SeatMap from "@/features/schedule/components/SeatMap";
 import BookingSummary from "@/features/schedule/components/BookingSummary";
 import Card from "@/components/Card";
 import { formatTime } from "@/utils/formatTime";
+import { createBooking } from "../api/createBooking";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ApiError } from "@/utils/api";
 
 export type SeatStatus = "available" | "selected" | "occupied";
 
@@ -24,6 +28,7 @@ type Props = {
 
 export default function SchedulePage({ data }: Props) {
   const { schedule } = data;
+  const router = useRouter();
 
   const [seats, setSeats] = useState(
     data.seats.map((s) => ({
@@ -34,7 +39,13 @@ export default function SchedulePage({ data }: Props) {
   );
 
   const selectedSeats = useMemo(
-    () => seats.filter((s) => s.status === "selected").map((s) => s.number),
+    () =>
+      seats
+        .filter((s) => s.status === "selected")
+        .map((s) => ({
+          id: s.id,
+          number: s.number,
+        })),
     [seats],
   );
 
@@ -51,6 +62,26 @@ export default function SchedulePage({ data }: Props) {
       }),
     );
   }, []);
+
+  const handleBooking = async () => {
+    try {
+      const booking = await createBooking({
+        scheduleId: schedule.id,
+        seatIds: selectedSeats.map((s) => s.id),
+      });
+
+      router.push(`/booking/${booking.booking.id}`);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        console.log(err.message);
+        toast.error(err.message);
+        return;
+      }
+
+      console.log(err);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,7 +108,7 @@ export default function SchedulePage({ data }: Props) {
           <BookingSummary
             selectedSeats={selectedSeats}
             pricePerSeat={schedule.price}
-            onConfirm={() => {}}
+            onConfirm={handleBooking}
             onBack={() => {}}
           />
         </div>
