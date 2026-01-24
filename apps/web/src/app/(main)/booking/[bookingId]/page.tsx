@@ -16,6 +16,7 @@ import { getBooking } from "@/features/booking/api/getBooking";
 import { useParams } from "next/navigation";
 import { formatDate } from "@/utils/formatDate";
 import { calculateDuration } from "@/utils/calculateDuration";
+import { createPayment } from "@/features/booking/api/createPaymentLink";
 
 export interface TrainInfo {
   name: string;
@@ -39,7 +40,7 @@ export interface Passenger {
 
 export interface BookingData {
   bookingId: string;
-  status: string;
+  status: BookingStatus;
   train: TrainInfo;
   route: RouteInfo;
   departureTime: string;
@@ -49,23 +50,25 @@ export interface BookingData {
   passengers: Passenger[];
   totalPrice: string;
   adminFee: number;
+  paymentUrl: string;
 }
 
 const OrderDetail = () => {
   const [countdown, setCountdown] = useState(10 * 60);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [loading, setLoading] = useState(false);
   const params = useParams();
 
   const status = useMemo(() => {
     if (bookingData) {
-      return bookingData.status.toLowerCase() as BookingStatus;
+      return bookingData.status as BookingStatus;
     }
-    return "pending";
+    return "UNPAID";
   }, [bookingData]);
 
   // Countdown timer for pending status
   useEffect(() => {
-    if (status !== "pending") return;
+    if (status !== "UNPAID") return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -97,27 +100,17 @@ const OrderDetail = () => {
     fetchBooking(params.bookingId! as string);
   }, []);
 
-  const handlePayNow = () => {
-    // toast({
-    //   title: "Processing Payment",
-    //   description: "Redirecting to payment gateway...",
-    // });
-    // // Simulate payment process
-    // setTimeout(() => {
-    //   setStatus("paid");
-    //   toast({
-    //     title: "Payment Successful",
-    //     description: "Your payment has been received.",
-    //   });
-    //   // Simulate ticket confirmation
-    //   setTimeout(() => {
-    //     setStatus("confirmed");
-    //     toast({
-    //       title: "Ticket Confirmed",
-    //       description: "Your e-ticket is now ready!",
-    //     });
-    //   }, 3000);
-    // }, 2000);
+  const handlePayNow = async () => {
+    setLoading(true);
+
+    try {
+      const res = await createPayment(bookingData!.bookingId);
+
+      window.location.href = res.payment_url;
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
 
   const handleCancelOrder = () => {
@@ -193,7 +186,7 @@ const OrderDetail = () => {
         <StatusTimeline
           status={status}
           countdown={
-            status === "pending" ? formatCountdown(countdown) : undefined
+            status === "UNPAID" ? formatCountdown(countdown) : undefined
           }
         />
 
@@ -204,30 +197,30 @@ const OrderDetail = () => {
           </span>
           <Button
             size="sm"
-            variant={status === "pending" ? "default" : "outline"}
+            variant={status === "UNPAID" ? "default" : "outline"}
             onClick={() =>
-              setBookingData((prev) => prev && { ...prev, status: "pending" })
+              setBookingData((prev) => prev && { ...prev, status: "UNPAID" })
             }
           >
-            Pending
+            UNPAID
           </Button>
           <Button
             size="sm"
-            variant={status === "paid" ? "default" : "outline"}
+            variant={status === "PENDING" ? "default" : "outline"}
             onClick={() =>
-              setBookingData((prev) => prev && { ...prev, status: "paid" })
+              setBookingData((prev) => prev && { ...prev, status: "PENDING" })
             }
           >
-            Paid
+            PENDING
           </Button>
           <Button
             size="sm"
-            variant={status === "confirmed" ? "default" : "outline"}
+            variant={status === "PAID" ? "default" : "outline"}
             onClick={() =>
-              setBookingData((prev) => prev && { ...prev, status: "confirmed" })
+              setBookingData((prev) => prev && { ...prev, status: "PAID" })
             }
           >
-            Confirmed
+            PAID
           </Button>
         </div>
 
@@ -276,6 +269,7 @@ const OrderDetail = () => {
               <PaymentSummaryCard
                 ticketPrice={parseInt(bookingData.totalPrice)}
                 passengerCount={bookingData.seats.length}
+                paymentUrl={bookingData.paymentUrl}
                 status={status}
                 onPayNow={handlePayNow}
                 onCancelOrder={handleCancelOrder}

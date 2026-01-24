@@ -27,6 +27,11 @@ export async function getBookingService(userId: string, bookingId: string) {
           },
         },
       },
+      payment: {
+        select: {
+          payment_url: true,
+        },
+      },
       schedule: {
         select: {
           train: {
@@ -66,6 +71,7 @@ export async function getBookingService(userId: string, bookingId: string) {
     bookingId: booking.id,
     status: booking.status,
     totalPrice: booking.totalPrice,
+    paymentUrl: booking.payment?.payment_url,
     train: {
       name: booking.schedule.train.name,
       code: booking.schedule.train.code,
@@ -97,7 +103,7 @@ export async function createBookingService(payload: bookingPayload) {
       data: {
         userId: payload.userId,
         scheduleId: payload.scheduleId,
-        status: "PENDING",
+        status: "UNPAID",
         expiresAt: new Date(Date.now() + 1000 * 60 * 60),
         totalPrice: schedule.price * payload.seatIds.length,
       },

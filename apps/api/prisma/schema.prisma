@@ -8,6 +8,7 @@ datasource db {
 }
 
 enum BookingStatus {
+  UNPAID
   PENDING
   PAID
   EXPIRED
@@ -95,7 +96,7 @@ model Booking {
   scheduleId String
   status     BookingStatus
   expiresAt  DateTime
-  totalPrice Decimal
+  totalPrice Int
 
   user     User     @relation(fields: [userId], references: [id])
   schedule Schedule @relation(fields: [scheduleId], references: [id])
@@ -123,6 +124,7 @@ model Payment {
   bookingId String        @unique
   amount    Int
   status    PaymentStatus
+  payment_url String?
   paidAt    DateTime?
 
   booking Booking @relation(fields: [bookingId], references: [id])

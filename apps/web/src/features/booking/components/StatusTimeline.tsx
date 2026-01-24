@@ -2,7 +2,7 @@ import { Check, Clock, CreditCard, Ticket } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export type BookingStatus = "pending" | "paid" | "confirmed";
+export type BookingStatus = "UNPAID" | "PENDING" | "PAID" | "EXPIRED";
 
 interface StatusTimelineProps {
   status: BookingStatus;
@@ -10,13 +10,13 @@ interface StatusTimelineProps {
 }
 
 const steps = [
-  { id: "pending", label: "Pending Payment", icon: Clock },
-  { id: "paid", label: "Paid", icon: CreditCard },
-  { id: "confirmed", label: "Confirmed", icon: Ticket },
+  { id: "UNPAID", label: "Unpaid Payment", icon: Clock },
+  { id: "PENDING", label: "Pending", icon: CreditCard },
+  { id: "PAID", label: "Paid", icon: Ticket },
 ];
 
 const getStepState = (stepId: string, currentStatus: BookingStatus) => {
-  const statusOrder = ["pending", "paid", "confirmed"];
+  const statusOrder = ["UNPAID", "PENDING", "PAID"];
   const currentIndex = statusOrder.indexOf(currentStatus);
   const stepIndex = statusOrder.indexOf(stepId);
 
@@ -27,22 +27,22 @@ const getStepState = (stepId: string, currentStatus: BookingStatus) => {
 
 const getStatusDescription = (status: BookingStatus) => {
   switch (status) {
-    case "pending":
+    case "UNPAID":
       return "Please complete your payment to secure your booking.";
-    case "paid":
+    case "PENDING":
       return "Payment received. Your ticket is being processed.";
-    case "confirmed":
+    case "PAID":
       return "Your booking is confirmed! Have a safe journey.";
   }
 };
 
 const getStatusBadgeColor = (status: BookingStatus) => {
   switch (status) {
-    case "pending":
+    case "UNPAID":
       return "bg-amber-100 text-amber-700 border-amber-200";
-    case "paid":
+    case "PENDING":
       return "bg-blue-100 text-blue-700 border-blue-200";
-    case "confirmed":
+    case "PAID":
       return "bg-green-100 text-green-700 border-green-200";
   }
 };
@@ -56,15 +56,15 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
           animate={{ scale: 1, opacity: 1 }}
           className={cn(
             "px-4 py-1.5 rounded-full text-sm font-semibold border",
-            getStatusBadgeColor(status)
+            getStatusBadgeColor(status),
           )}
         >
-          {status === "pending" && "Pending Payment"}
-          {status === "paid" && "Payment Received"}
-          {status === "confirmed" && "Ticket Confirmed"}
+          {status === "UNPAID" && "Unpaid Payment"}
+          {status === "PENDING" && "Pending Received"}
+          {status === "PAID" && "Ticket Paid"}
         </motion.div>
 
-        {status === "pending" && countdown && (
+        {status === "UNPAID" && countdown && (
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -90,7 +90,7 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
           style={{ top: "22px", left: "60px", width: "calc(100% - 120px)" }}
           initial={{ scaleX: 0 }}
           animate={{
-            scaleX: status === "pending" ? 0 : status === "paid" ? 0.5 : 1,
+            scaleX: status === "UNPAID" ? 0 : status === "PENDING" ? 0.5 : 1,
           }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         />
@@ -115,7 +115,7 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
                   state === "active" &&
                     "bg-bg-primary border-primary text-primary",
                   state === "upcoming" &&
-                    "bg-slate-100 border-muted-foreground/30 text-muted-foreground"
+                    "bg-slate-100 border-muted-foreground/30 text-muted-foreground",
                 )}
                 whileHover={{ scale: 1.05 }}
               >
@@ -130,7 +130,7 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
                   "mt-2 text-xs font-medium text-center max-w-20",
                   state === "active" && "text-bg-primary font-semibold",
                   state === "upcoming" && "text-muted-foreground",
-                  state === "completed" && "text-green-600"
+                  state === "completed" && "text-green-600",
                 )}
               >
                 {step.label}
@@ -145,8 +145,8 @@ export function StatusTimeline({ status, countdown }: StatusTimelineProps) {
         {getStatusDescription(status)}
       </p>
 
-      {/* Warning Alert for Pending */}
-      {status === "pending" && (
+      {/* Warning Alert for UNPAID */}
+      {status === "UNPAID" && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
