@@ -14,7 +14,6 @@ import { BookingStatus } from "./StatusTimeline";
 
 interface PaymentSummaryCardProps {
   ticketPrice: number;
-  adminFee: number;
   passengerCount: number;
   status: BookingStatus;
   onPayNow?: () => void;
@@ -22,10 +21,9 @@ interface PaymentSummaryCardProps {
   onDownloadTicket?: () => void;
   onViewETicket?: () => void;
 }
-
+const adminFee = Number(process.env.NEXT_PUBLIC_ADMIN_FEE) || 1000;
 export function PaymentSummaryCard({
   ticketPrice,
-  adminFee,
   passengerCount,
   status,
   onPayNow,
@@ -33,7 +31,7 @@ export function PaymentSummaryCard({
   onDownloadTicket,
   onViewETicket,
 }: PaymentSummaryCardProps) {
-  const subtotal = ticketPrice * passengerCount;
+  const subtotal = ticketPrice;
   const total = subtotal + adminFee;
 
   const formatPrice = (price: number) => {

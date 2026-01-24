@@ -10,6 +10,7 @@ import { createBooking } from "../api/createBooking";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/utils/api";
+import { formatDate } from "@/utils/formatDate";
 
 export type SeatStatus = "available" | "selected" | "occupied";
 
@@ -93,7 +94,7 @@ export default function SchedulePage({ data }: Props) {
             trainNumber={schedule.train.code}
             origin={schedule.origin}
             destination={schedule.destination}
-            date={new Date(schedule.departureTime).toDateString()}
+            date={formatDate(schedule.departureTime)}
             time={formatTime(schedule.departureTime)}
             classType="Economy"
           />

@@ -95,10 +95,11 @@ model Booking {
   scheduleId String
   status     BookingStatus
   expiresAt  DateTime
+  totalPrice Decimal
 
   user     User     @relation(fields: [userId], references: [id])
   schedule Schedule @relation(fields: [scheduleId], references: [id])
-  seats     BookingSeat[]
+  bookingSeats     BookingSeat[]
   payment   Payment?
 
   createdAt DateTime @default(now())

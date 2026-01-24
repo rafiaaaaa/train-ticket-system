@@ -1,6 +1,7 @@
 import { SearchCard } from "./SearchCard";
 import { getSchedules } from "../api/getSchedules";
 import { formatTime } from "@/utils/formatTime";
+import { calculateDuration } from "@/utils/calculateDuration";
 
 type ScheduleCardData = {
   scheduleId: string;
@@ -73,7 +74,7 @@ export default async function SearchResult({ searchParams = {} }: Props) {
                   destination={s.destination.name}
                   departureTime={formatTime(s.departureTime)}
                   arrivalTime={formatTime(s.arrivalTime)}
-                  duration={calcDuration(s.departureTime, s.arrivalTime)}
+                  duration={calculateDuration(s.departureTime, s.arrivalTime)}
                   price={s.price}
                   tag={s.availableSeats <= 5 ? "Limited Seats" : undefined}
                 />
@@ -84,11 +85,4 @@ export default async function SearchResult({ searchParams = {} }: Props) {
       </div>
     </section>
   );
-}
-
-function calcDuration(start: string, end: string) {
-  const diff = new Date(end).getTime() - new Date(start).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
 }

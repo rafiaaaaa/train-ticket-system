@@ -1,11 +1,15 @@
 import { Router } from "express";
-import { createBookingController } from "./booking.controller";
+import {
+  createBookingController,
+  getBookingController,
+} from "./booking.controller";
 import { validate } from "../../middlewares/validate";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { createBookingSchema } from "@repo/shared";
 
 const router = Router();
 
+router.get("/:bookingId", authMiddleware, getBookingController);
 router.post(
   "/",
   authMiddleware,

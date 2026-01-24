@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Train } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -9,33 +9,59 @@ import {
   BookingStatus,
 } from "@/features/booking/components/StatusTimeline";
 import { OrderInfoCard } from "@/features/booking/components/OrderInfoCard";
-import { PassengerInfoCard } from "@/features/booking/components/PassengerInfoCard";
 import { PaymentSummaryCard } from "@/features/booking/components/PaymentSummaryCard";
 import Link from "next/link";
 import { Section } from "@/components/ui/section";
+import { getBooking } from "@/features/booking/api/getBooking";
+import { useParams } from "next/navigation";
+import { formatDate } from "@/utils/formatDate";
+import { calculateDuration } from "@/utils/calculateDuration";
 
-// Mock order data
-const orderData = {
-  bookingId: "TRN-2024-A7X9K2",
-  trainName: "Argo Bromo Anggrek",
-  trainNumber: "KA-84",
-  origin: "Jakarta Gambir",
-  destination: "Surabaya Gubeng",
-  date: "Fri, 10 Jan 2025",
-  time: "08:00",
-  classType: "Executive",
-  seats: ["A1", "A2"],
-  passengers: [
-    { name: "John Doe", idNumber: "3171****5678" },
-    { name: "Jane Doe", idNumber: "3171****8765" },
-  ],
-  ticketPrice: 550000,
-  adminFee: 7500,
-};
+export interface TrainInfo {
+  name: string;
+  code: string;
+}
+
+export interface Route {
+  name: string;
+  code: string;
+}
+
+export interface RouteInfo {
+  origin: Route;
+  destination: Route;
+}
+
+export interface Passenger {
+  name: string;
+  idNumber: string;
+}
+
+export interface BookingData {
+  bookingId: string;
+  status: string;
+  train: TrainInfo;
+  route: RouteInfo;
+  departureTime: string;
+  arrivalTime: string;
+  classType: string;
+  seats: string[];
+  passengers: Passenger[];
+  totalPrice: string;
+  adminFee: number;
+}
 
 const OrderDetail = () => {
-  const [status, setStatus] = useState<BookingStatus>("pending");
-  const [countdown, setCountdown] = useState(15 * 60); // 15 minutes in seconds
+  const [countdown, setCountdown] = useState(10 * 60);
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const params = useParams();
+
+  const status = useMemo(() => {
+    if (bookingData) {
+      return bookingData.status.toLowerCase() as BookingStatus;
+    }
+    return "pending";
+  }, [bookingData]);
 
   // Countdown timer for pending status
   useEffect(() => {
@@ -61,6 +87,15 @@ const OrderDetail = () => {
       .toString()
       .padStart(2, "0")}`;
   };
+
+  useEffect(() => {
+    async function fetchBooking(bookingId: string) {
+      const booking = await getBooking(params.bookingId! as string);
+      setBookingData(booking);
+    }
+
+    fetchBooking(params.bookingId! as string);
+  }, []);
 
   const handlePayNow = () => {
     // toast({
@@ -107,6 +142,32 @@ const OrderDetail = () => {
     // });
   };
 
+  if (!bookingData) {
+    return;
+  }
+
+  if (bookingData.status == "EXPIRED") {
+    return (
+      <Section>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+              <Train className="w-6 h-6 text-secondary" />
+              <h1 className="text-xl font-bold text-foreground">
+                Order Expired
+              </h1>
+            </div>
+          </div>
+        </div>
+      </Section>
+    );
+  }
+
   return (
     <Section>
       <div className="container mx-auto px-4 py-4">
@@ -144,21 +205,27 @@ const OrderDetail = () => {
           <Button
             size="sm"
             variant={status === "pending" ? "default" : "outline"}
-            onClick={() => setStatus("pending")}
+            onClick={() =>
+              setBookingData((prev) => prev && { ...prev, status: "pending" })
+            }
           >
             Pending
           </Button>
           <Button
             size="sm"
             variant={status === "paid" ? "default" : "outline"}
-            onClick={() => setStatus("paid")}
+            onClick={() =>
+              setBookingData((prev) => prev && { ...prev, status: "paid" })
+            }
           >
             Paid
           </Button>
           <Button
             size="sm"
             variant={status === "confirmed" ? "default" : "outline"}
-            onClick={() => setStatus("confirmed")}
+            onClick={() =>
+              setBookingData((prev) => prev && { ...prev, status: "confirmed" })
+            }
           >
             Confirmed
           </Button>
@@ -174,25 +241,28 @@ const OrderDetail = () => {
               transition={{ delay: 0.1 }}
             >
               <OrderInfoCard
-                bookingId={orderData.bookingId}
-                trainName={orderData.trainName}
-                trainNumber={orderData.trainNumber}
-                origin={orderData.origin}
-                destination={orderData.destination}
-                date={orderData.date}
-                time={orderData.time}
-                classType={orderData.classType}
-                seats={orderData.seats}
+                bookingId={bookingData?.bookingId}
+                trainName={bookingData.train.name}
+                trainNumber={bookingData.train.code}
+                origin={bookingData.route.origin.name}
+                destination={bookingData.route.destination.name}
+                date={formatDate(bookingData.departureTime)}
+                time={calculateDuration(
+                  bookingData.departureTime,
+                  bookingData.arrivalTime,
+                )}
+                classType={bookingData.classType}
+                seats={bookingData.seats}
               />
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
               <PassengerInfoCard passengers={orderData.passengers} />
-            </motion.div>
+            </motion.div> */}
           </div>
 
           {/* Right Column - Payment Summary */}
@@ -204,9 +274,8 @@ const OrderDetail = () => {
               className="lg:sticky lg:top-24"
             >
               <PaymentSummaryCard
-                ticketPrice={orderData.ticketPrice}
-                adminFee={orderData.adminFee}
-                passengerCount={orderData.passengers.length}
+                ticketPrice={parseInt(bookingData.totalPrice)}
+                passengerCount={bookingData.seats.length}
                 status={status}
                 onPayNow={handlePayNow}
                 onCancelOrder={handleCancelOrder}
