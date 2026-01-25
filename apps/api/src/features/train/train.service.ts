@@ -37,7 +37,7 @@ export const getSeatService = async (scheduleId: string) => {
         where: { scheduleId },
         select: { seatId: true },
       })
-    ).map((s) => s.seatId),
+    ).map((s: any) => s.seatId),
   );
 
   const seats = await prisma.seat.findMany({
@@ -59,7 +59,7 @@ export const getSeatService = async (scheduleId: string) => {
       arrivalTime: schedule.arrivalTime,
       price: schedule.price,
     },
-    seats: seats.map((seat) => ({
+    seats: seats.map((seat: any) => ({
       id: seat.id,
       number: seat.number,
       isAvailable: !bookedSeatIds.has(seat.id),
@@ -116,7 +116,7 @@ export const getTrainSchedulesService = async (params: {
   });
 
   const results = schedules
-    .map((s) => {
+    .map((s: any) => {
       const availableSeats = s.train.totalSeats - s._count.bookingSeats;
 
       return {
@@ -140,7 +140,7 @@ export const getTrainSchedulesService = async (params: {
         availableSeats,
       };
     })
-    .filter((s) => {
+    .filter((s: any) => {
       if (!passengerCount) return true;
       return s.availableSeats >= passengerCount;
     });
