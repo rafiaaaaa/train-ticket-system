@@ -6,7 +6,6 @@ describe("paymentService", () => {
     const result = await payBooking({
       bookingId: "89fd5604-6154-4d8c-8f22-50d8d31b514f",
       userId: "11111111-1111-1111-1111-111111111111",
-      amount: 100,
     });
 
     expect(result).toBeDefined();
