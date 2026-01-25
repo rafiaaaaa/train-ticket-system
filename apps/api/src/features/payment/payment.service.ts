@@ -34,15 +34,10 @@ export async function payBooking({
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  const orderId = `BOOK-${crypto
-    .createHash("sha1")
-    .update(bookingId)
-    .digest("hex")
-    .slice(0, 10)}`;
 
   const paymentLink = await createPaymentLink({
     transaction_details: {
-      order_id: orderId,
+      order_id: bookingId,
       gross_amount: booking.totalPrice,
     },
     customer_details: {
