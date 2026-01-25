@@ -47,7 +47,7 @@ export async function payBooking({
     },
   });
 
-  const payment = await prisma.$transaction(async (tx) => {
+  const payment = await prisma.$transaction(async (tx: any) => {
     const payment = await tx.payment.create({
       data: {
         bookingId,

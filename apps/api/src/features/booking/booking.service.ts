@@ -82,12 +82,12 @@ export async function getBookingService(userId: string, bookingId: string) {
     },
     departureTime: booking.schedule.departureTime,
     arrivalTime: booking.schedule.arrivalTime,
-    seats: booking.bookingSeats.map((bs) => bs.seat.number),
+    seats: booking.bookingSeats.map((bs: any) => bs.seat.number),
   };
 }
 
 export async function createBookingService(payload: bookingPayload) {
-  const data = await prisma.$transaction(async (tx) => {
+  const data = await prisma.$transaction(async (tx: any) => {
     const schedule = await tx.schedule.findUnique({
       where: { id: payload.scheduleId },
       select: {
