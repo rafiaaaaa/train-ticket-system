@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate",
-    "start": "tsx src/server.ts"
+    "build": "prisma generate && bun build src/server.ts --outdir ./dist --target node",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
