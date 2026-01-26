@@ -3,14 +3,14 @@
   "bunVersion": "1.x",
   "builds": [
     {
-      "src": "dist/server.js",
+      "src": "/src/index.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/dist/server.js"
+      "dest": "/src/index.ts"
     }
   ]
 }
