@@ -1,21 +1,36 @@
+// {
+//   "compilerOptions": {
+//     "target": "ES2020",
+//     "module": "CommonJS",
+//     "moduleResolution": "Node",
+//     "strict": true,
+//     "esModuleInterop": true,
+
+//     "forceConsistentCasingInFileNames": true,
+//     "skipLibCheck": true,
+//     "outDir": "dist",
+//     "paths": {
+//       "@repo/shared": ["../../packages/shared/src"]
+//     },
+//     "types": ["bun-types"]
+//   },
+//   // "include": ["src", "../../packages/shared/src/**/*"],
+//   // "exclude": ["node_modules"]
+//   "include": ["src"],
+//   "exclude": ["node_modules", "dist"]
+// }
+
 {
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "moduleResolution": "Node",
-    "strict": true,
-    "esModuleInterop": true,
-    
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
+    "rootDir": "src",
     "outDir": "dist",
-    "paths": {
-      "@repo/shared": ["../../packages/shared/src"]
-    },
-    "types": ["bun-types"]
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "types": ["node", "express"]
   },
-  // "include": ["src", "../../packages/shared/src/**/*"],
-  // "exclude": ["node_modules"]
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }
